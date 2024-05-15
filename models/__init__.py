@@ -24,7 +24,7 @@ class JobId(Document):
         
 class JobPosting(Document):
     jobId: str = None  #last number from'trackingUrn': 'urn:li:jobPosting:3921698294'
-    salary: str = None
+    salary: Optional[str] = None
     description: Optional[str] = None
     company: Optional[str] = None 
     job_title: Optional[str] = None 

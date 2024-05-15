@@ -7,8 +7,6 @@ from datetime import datetime
 from models import JobPosting
 
 job_url='https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{}'
-job={}
-list_jobs=[]
 
 async def getWorkplaceType(workplaceType):
     try:
@@ -28,7 +26,7 @@ async def scrape_job(jobAPI, job_id) -> JobPosting:
     resp = requests.get(job_url.format(job_id))
     if resp.status_code != 200:
         sleep(1)
-        scrape_job(job, job_id) 
+        return await scrape_job(jobAPI, job_id) 
     soup = BeautifulSoup(resp.text,'html.parser')
     
     # write_html_to_file(soup)
@@ -64,7 +62,7 @@ async def scrape_job(jobAPI, job_id) -> JobPosting:
         location=None
         
     try:
-        job_type=soup.find("span",{"class":"posted-time-ago__text"}).text.strip()
+        job_type=soup.find("ul",{"class":"description__job-criteria-list"}).find_all("li")[1].text.replace("Employment type","").strip()
     except:
         job_type=None
 
