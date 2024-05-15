@@ -1,5 +1,6 @@
 from typing import List
-from models import JobId, JobIdList
+from models import JobId, JobIdList, JobPosting
+from linkedin_api.utils.helpers import get_id_from_urn
 
 jobIds_collection = JobId
 
@@ -11,17 +12,22 @@ class DB:
         # if existing_job_id is None:
         #     return await jobId.create()
         
-    
+    async def add_job_posting(job_posting: JobPosting) -> JobId:
+        return await job_posting.create()
 
     # async def find_user(email: str):
     #     user = await user_collection.find_one({"email": email})
     #     return user
 
 
-    async def retrieve_jobIds() -> List[str]:
+    async def retrieve_jobIds() -> List[JobIdList]:
         return await jobIds_collection.all().project(JobIdList).to_list()
 
-
+    async def insert_jobs(jobs):
+        for job in jobs:
+            jobId = get_id_from_urn(job['trackingUrn'])
+            job_obj = JobId(jobId=jobId, title=job['title'], posterId=job['posterId'], entityUrn=job['entityUrn'])
+            await DB.add_job_id(job_obj)
 
 
     # async def retrieve_student(id: PydanticObjectId) -> Student:

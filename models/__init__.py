@@ -21,7 +21,26 @@ class JobId(Document):
     
     class Settings:
         name = "jobId"
+        
+class JobPosting(Document):
+    jobId: str = None  #last number from'trackingUrn': 'urn:li:jobPosting:3921698294'
+    salary: str = None
+    description: Optional[str] = None
+    company: Optional[str] = None 
+    job_title: Optional[str] = None 
+    level: Optional[str] = None 
+    location: Optional[str] = None 
+    job_type: Optional[str] = None 
+    nb_candidates: Optional[str] = None 
+    workplace_type: Optional[str] = None
+    listedAt: int
+    remote_work_allowed: Optional[bool] = False
+    company_apply_url: Optional[str] = None
+    
+            
+    class Settings:
+        name = "jobPostings"
 
         
         
-__all__ = [JobId]
+__all__ = [JobId, JobPosting]
