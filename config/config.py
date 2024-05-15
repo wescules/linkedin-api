@@ -18,7 +18,10 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     GROQ_LLAMA3_KEY: Optional[str] = None
     GOOGLE_MAPS_KEY: Optional[str] = None
-    ASSETS_ROOT: Optional[str] = '/static/assets'
+    
+    
+    LINKEDIN_USERNAME: Optional[str] = None
+    LINKEDIN_PASSWORD: Optional[str] = None
 
     class Config:
         env_file = ".env"

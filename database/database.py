@@ -1,5 +1,3 @@
-from typing import List, Union
-from beanie import PydanticObjectId
 from models import JobId
 
 jobIds_collection = JobId
@@ -7,6 +5,9 @@ jobIds_collection = JobId
 class DB:
     
     async def add_job_id(jobId: JobId) -> JobId:
+        existing_job_id = await jobIds_collection.find_one({"jobId": jobId.jobId})
+        if existing_job_id:
+            return
         return await jobId.create()
     
 

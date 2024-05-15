@@ -1,24 +1,40 @@
+from config.config import Settings, initiate_database
 from linkedin_api import Linkedin
-
-TEST_LINKEDIN_USERNAME = ("wafermonster@yahoo.com")
-TEST_LINKEDIN_PASSWORD = ("*4-SU$=@Cic&dZv")
+from linkedin_api.utils.helpers import get_id_from_urn
+from models import JobId
+from database.database import DB
+import asyncio
 
 # Authenticate using any Linkedin account credentials
-api = Linkedin(TEST_LINKEDIN_USERNAME, TEST_LINKEDIN_PASSWORD)
+api = Linkedin(Settings().LINKEDIN_USERNAME, Settings().LINKEDIN_PASSWORD)
 
 # GET a profile
 # profile = api.get_profile('wescules')
 
 # jobs = api.search_jobs(companies=["Meta"], limit=1)
 
-jobs = [
-    {"trackingUrn": "1234", "title": "Swe1", "posterId": '1233', "jobId": '1234124124'},
-    {"trackingUrn": "12341", "title": "Swe12", "posterId": '121333', "jobId": '1234124123123124'},
-    {"trackingUrn": "12342", "title": "Swe123", "posterId": '1232223', "jobId": '1234123123124124'}
-]
+# jobs = [
+#     {"trackingUrn": "urn:li:jobPosting:3921698294", "title": "Swe1", "posterId": '1233', "entityUrn": 'urn:li:fsd_jobPosting:3921698294'},
+#     {"trackingUrn": "urn:li:jobPosting:3921698295", "title": "Swe12", "posterId": '121333', "entityUrn": 'urn:li:fsd_jobPosting:3921698295'},
+#     {"trackingUrn": "urn:li:jobPosting:3921698296", "title": "Swe123", "posterId": '1232223', "entityUrn": 'urn:li:fsd_jobPosting:3921698296'}
+# ]
+async def insert_jobs(jobs):
+    for job in jobs:
+        jobId = get_id_from_urn(job['trackingUrn'])
+        job_obj = JobId(jobId=jobId, title=job['title'], posterId=job['posterId'], entityUrn=job['entityUrn'])
+        await DB.add_job_id(job_obj)
     
-for job in jobs:
+async def main():
+    await initiate_database()
+    jobs = api.search_jobs(companies=["10667"], job_type=["F", "C"])
+    await insert_jobs(jobs)
     
+    
+asyncio.run(main())
+
+
+
+
     
     
     
