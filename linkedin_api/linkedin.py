@@ -1465,8 +1465,9 @@ class Linkedin(object):
         data = res.json()
 
         if data and "status" in data and data["status"] != 200:
-            print("request failed: {}".format(data["message"]))
-            return {}
+            print("request failed: {}".format(data))
+            sleep(1)
+            return self.get_job(job_id)
 
         return data
 
