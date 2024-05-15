@@ -1,14 +1,16 @@
-from models import JobId
+from typing import List
+from models import JobId, JobIdList
 
 jobIds_collection = JobId
 
 class DB:
     
     async def add_job_id(jobId: JobId) -> JobId:
-        existing_job_id = await jobIds_collection.find_one({"jobId": jobId.jobId})
-        if existing_job_id:
-            return
         return await jobId.create()
+        # existing_job_id = await jobIds_collection.find_one({"jobId": jobId.jobId})
+        # if existing_job_id is None:
+        #     return await jobId.create()
+        
     
 
     # async def find_user(email: str):
@@ -16,9 +18,8 @@ class DB:
     #     return user
 
 
-    # async def retrieve_students() -> List[Student]:
-    #     students = await student_collection.all().to_list()
-    #     return students
+    async def retrieve_jobIds() -> List[str]:
+        return await jobIds_collection.all().project(JobIdList).to_list()
 
 
 

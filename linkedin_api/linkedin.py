@@ -6,6 +6,7 @@ import json
 import logging
 import random
 import uuid
+import sys
 from operator import itemgetter
 from time import sleep
 from urllib.parse import urlencode
@@ -21,8 +22,14 @@ from linkedin_api.utils.helpers import (
     generate_trackingId_as_charString,
 )
 
-logger = logging.getLogger(__name__)
-
+logger = logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 def default_evade():
     """
@@ -615,7 +622,7 @@ class Linkedin(object):
             ) or len(elements) == 0:
                 break
 
-            self.logger.debug(f"results grew to {len(results)}")
+            print(f"results grew to {len(results)}")
 
         return results
 

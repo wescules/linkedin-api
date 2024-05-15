@@ -11,13 +11,8 @@ api = Linkedin(Settings().LINKEDIN_USERNAME, Settings().LINKEDIN_PASSWORD)
 # GET a profile
 # profile = api.get_profile('wescules')
 
-# jobs = api.search_jobs(companies=["Meta"], limit=1)
+# companies=["10667"]   This is company urn of Meta
 
-# jobs = [
-#     {"trackingUrn": "urn:li:jobPosting:3921698294", "title": "Swe1", "posterId": '1233', "entityUrn": 'urn:li:fsd_jobPosting:3921698294'},
-#     {"trackingUrn": "urn:li:jobPosting:3921698295", "title": "Swe12", "posterId": '121333', "entityUrn": 'urn:li:fsd_jobPosting:3921698295'},
-#     {"trackingUrn": "urn:li:jobPosting:3921698296", "title": "Swe123", "posterId": '1232223', "entityUrn": 'urn:li:fsd_jobPosting:3921698296'}
-# ]
 async def insert_jobs(jobs):
     for job in jobs:
         jobId = get_id_from_urn(job['trackingUrn'])
@@ -26,8 +21,31 @@ async def insert_jobs(jobs):
     
 async def main():
     await initiate_database()
-    jobs = api.search_jobs(companies=["10667"], job_type=["F", "C"])
-    await insert_jobs(jobs)
+    # keywords = [
+    #     # "Software Engineer"
+    #     # "Frontend Engineer",
+    #     # "Backend Engineer",
+    #     # "Data Engineer",
+    #     "Data Scientist",
+    #     "Database",
+    #     "Devops",
+    #     "Developer",
+    #     "QA",
+    #     "Designer",
+    #     "Product Manager",
+    #     "Manager",
+    #     "Marketing",
+    #     "Sales",
+    #     "Support"
+    #     ]
+    # for keyword in keywords:
+    #     print(f"Searching for {keyword}")
+    #     jobs = api.search_jobs(keywords=keyword, job_type=["F", "C"])
+    #     await insert_jobs(jobs)
+    
+    # api.get_job(job_id="3841566189")
+    jobs =  await DB.retrieve_jobIds()
+    print(jobs)
     
     
 asyncio.run(main())
