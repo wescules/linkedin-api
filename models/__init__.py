@@ -22,6 +22,12 @@ class JobId(Document):
     class Settings:
         name = "jobId"
         
+class JobPostingIds(BaseModel):
+    jobId: str = None
+    
+    class Settings:
+        name = "jobPostings"
+        projection = {"jobId": 1}
 class JobPosting(Document):
     jobId: str = None  #last number from'trackingUrn': 'urn:li:jobPosting:3921698294'
     salary: Optional[str] = None

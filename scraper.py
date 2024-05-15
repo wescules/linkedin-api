@@ -19,6 +19,13 @@ async def getWorkplaceType(workplaceType):
     except:
         return "In Person"
 
+async def get_company_url(jobAPI):
+    if 'com.linkedin.voyager.jobs.OffsiteApply' in jobAPI['applyMethod']:
+        return jobAPI['applyMethod']['com.linkedin.voyager.jobs.OffsiteApply']['companyApplyUrl']
+    elif 'com.linkedin.voyager.jobs.ComplexOnsiteApply' in jobAPI['applyMethod'] and 'companyApplyUrl' in jobAPI['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']:
+        return jobAPI['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']['companyApplyUrl']
+    else:
+        print("Cannot find Company URL")
 
 async def scrape_job(jobAPI, job_id) -> JobPosting:
     print(f"read jobId:{job_id}")
@@ -75,7 +82,7 @@ async def scrape_job(jobAPI, job_id) -> JobPosting:
     workplace_type = await getWorkplaceType(jobAPI)
     listedAt = jobAPI['listedAt']
     remote_work_allowed = jobAPI['workRemoteAllowed']
-    company_apply_url = jobAPI['applyMethod']['com.linkedin.voyager.jobs.OffsiteApply']['companyApplyUrl']
+    company_apply_url = await get_company_url(jobAPI)
     
     return JobPosting(jobId=job_id, salary=salary, description=description, 
                             company=company, job_title=job_title, level=level, location=location, 

@@ -140,7 +140,7 @@ class Linkedin(object):
         res = self._fetch(url, params=url_params)
         data = res.json()
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data["message"]))
+            print("request failed: {}".format(data["message"]))
             return {}
         while data and data["metadata"]["paginationToken"] != "":
             if len(data["elements"]) >= post_count:
@@ -176,7 +176,7 @@ class Linkedin(object):
         res = self._fetch(url, params=url_params)
         data = res.json()
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data["status"]))
+            print("request failed: {}".format(data["status"]))
             return {}
         while data and data["metadata"]["paginationToken"] != "":
             if len(data["elements"]) >= comment_count:
@@ -187,7 +187,7 @@ class Linkedin(object):
             url_params["paginationToken"] = pagination_token
             res = self._fetch(url, params=url_params)
             if res.json() and "status" in res.json() and res.json()["status"] != 200:
-                self.logger.info("request failed: {}".format(data["status"]))
+                print("request failed: {}".format(data["status"]))
                 return {}
             data["metadata"] = res.json()["metadata"]
             """ When the number of comments exceed total available 
@@ -709,7 +709,7 @@ class Linkedin(object):
 
         data = res.json()
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data["message"]))
+            print("request failed: {}".format(data["message"]))
             return {}
 
         # massage [profile] data
@@ -961,7 +961,7 @@ class Linkedin(object):
         data = res.json()
 
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data))
+            print("request failed: {}".format(data))
             return {}
 
         school = data["elements"][0]
@@ -988,7 +988,7 @@ class Linkedin(object):
         data = res.json()
 
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data["message"]))
+            print("request failed: {}".format(data["message"]))
             return {}
 
         company = data["elements"][0]
@@ -1213,7 +1213,7 @@ class Linkedin(object):
 
         # Validating message length (max size is 300 characters)
         if len(message) > 300:
-            self.logger.info("Message too long. Max size is 300 characters")
+            print("Message too long. Max size is 300 characters")
             return False
 
         if not profile_urn:
@@ -1465,7 +1465,7 @@ class Linkedin(object):
         data = res.json()
 
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data["message"]))
+            print("request failed: {}".format(data["message"]))
             return {}
 
         return data
@@ -1486,7 +1486,7 @@ class Linkedin(object):
         data = res.json()
 
         if data and "status" in data and data["status"] != 200:
-            self.logger.info("request failed: {}".format(data.get("message")))
+            print("request failed: {}".format(data.get("message")))
             return {}
 
         return data

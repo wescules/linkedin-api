@@ -44,15 +44,24 @@ async def get_all_job_listings():
 
 async def populate_job_postings():
     jobs =  await DB.retrieve_jobIds()
-    job_ids = [obj.jobId for obj in jobs]    
+    job_ids = [obj.jobId for obj in jobs]
     
+    
+    job_posting_id = await DB.retrieve_jobPostingIds()
+    job_posting_ids = [obj.jobId for obj in job_posting_id]
+    
+    job_ids = list(set(job_ids) - set(job_posting_ids)) # dont search for postings already in the job posting db when re running
     for job_id in job_ids:
         job = api.get_job(job_id=job_id)
-        if 'com.linkedin.voyager.jobs.OffsiteApply' not in job['applyMethod']:  #only scrape things with offsite apply
+        # if ('com.linkedin.voyager.jobs.SimpleOnsiteApply' in job['applyMethod'] and 'com.linkedin.voyager.jobs.OffsiteApply' not in job['applyMethod']) and ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' not in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):  #only scrape things with offsite apply
+            
+        if 'com.linkedin.voyager.jobs.OffsiteApply' in job['applyMethod'] or ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):
+            job = await scrape_job(job, job_id)
+            await DB.add_job_posting(job)
+        else:
             print(f"this does not have offsite apply {json.dumps(job['applyMethod'])}")
+            await DB.delete_jobId(job_id)
             continue
-        job = await scrape_job(job, job_id)
-        await DB.add_job_posting(job)
 
 
 async def main():

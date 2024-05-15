@@ -1,8 +1,9 @@
 from typing import List
-from models import JobId, JobIdList, JobPosting
+from models import JobId, JobIdList, JobPosting, JobPostingIds
 from linkedin_api.utils.helpers import get_id_from_urn
 
 jobIds_collection = JobId
+jobPosting_collection = JobPosting
 
 class DB:
     
@@ -22,6 +23,9 @@ class DB:
 
     async def retrieve_jobIds() -> List[JobIdList]:
         return await jobIds_collection.all().project(JobIdList).to_list()
+    
+    async def retrieve_jobPostingIds() -> List[JobPostingIds]:
+        return await jobPosting_collection.all().project(JobPostingIds).to_list()
 
     async def insert_jobs(jobs):
         for job in jobs:
@@ -36,11 +40,12 @@ class DB:
     #         return student
 
 
-    # async def delete_student(id: PydanticObjectId) -> bool:
-    #     student = await student_collection.get(id)
-    #     if student:
-    #         await student.delete()
-    #         return True
+
+    async def delete_jobId(job_id: str) -> bool:
+        jobId = await jobIds_collection.find_one({"jobId": job_id})
+        if jobId:
+            await jobId.delete()
+            return True
 
 
     # async def update_student_data(id: PydanticObjectId, data: dict) -> Union[bool, Student]:
