@@ -498,6 +498,7 @@ class Linkedin(object):
         remote=None,
         listed_at=24 * 60 * 60,
         distance=None,
+        easy_apply="false",
         limit=-1,
         offset=0,
         **kwargs,
@@ -557,6 +558,8 @@ class Linkedin(object):
             query["selectedFilters"]["distance"] = f"List({distance})"
         if remote:
             query["selectedFilters"]["workplaceType"] = f"List({','.join(remote)})"
+        if easy_apply:
+            query["selectedFilters"]["applyWithLinkedin"] = f"List({','.join(easy_apply)})"
 
         query["selectedFilters"]["timePostedRange"] = f"List(r{listed_at})"
         query["spellCorrectionEnabled"] = "true"
@@ -1466,8 +1469,8 @@ class Linkedin(object):
 
         if data and "status" in data and data["status"] != 200:
             print("request failed: {}".format(data))
-            sleep(1)
-            return self.get_job(job_id)
+            sleep(5)
+            return {}
 
         return data
 

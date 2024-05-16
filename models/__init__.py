@@ -21,6 +21,17 @@ class JobId(Document):
     
     class Settings:
         name = "jobId"
+
+class Company(Document):
+    companyId: Optional[str] = None  #urn id from linkedin
+    company_name: Optional[str] = None # meta
+    company_legal_name: Optional[str] = None # meta platforms inc
+    company_descriptor: Optional[str] = None # scraped information about this company
+        
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+    
+    class Settings:
+        name = "company"
         
 class JobPostingIds(BaseModel):
     jobId: str = None
@@ -28,6 +39,7 @@ class JobPostingIds(BaseModel):
     class Settings:
         name = "jobPostings"
         projection = {"jobId": 1}
+
 class JobPosting(Document):
     jobId: str = None  #last number from'trackingUrn': 'urn:li:jobPosting:3921698294'
     salary: Optional[str] = None
@@ -49,4 +61,4 @@ class JobPosting(Document):
 
         
         
-__all__ = [JobId, JobPosting]
+__all__ = [JobId, JobPosting, Company]

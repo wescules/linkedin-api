@@ -1,13 +1,10 @@
-from collections import Counter
 import json
 from config.config import Settings, initiate_database
 from linkedin_api import Linkedin
-from linkedin_api.utils.helpers import get_id_from_urn
-from models import JobId
 from database.database import DB
 import asyncio
 
-from scraper import scrape_job
+from scraper.linkedinScraper import scrape_job
 
 # Authenticate using any Linkedin account credentials
 api = Linkedin(Settings().LINKEDIN_USERNAME, Settings().LINKEDIN_PASSWORD)
@@ -43,16 +40,12 @@ async def get_all_job_listings():
         await DB.insert_jobs(jobs)
 
 async def populate_job_postings():
-    jobs =  await DB.retrieve_jobIds()
-    job_ids = [obj.jobId for obj in jobs]
+    job_ids = await get_unused_job_ids()
     
-    
-    job_posting_id = await DB.retrieve_jobPostingIds()
-    job_posting_ids = [obj.jobId for obj in job_posting_id]
-    
-    job_ids = list(set(job_ids) - set(job_posting_ids)) # dont search for postings already in the job posting db when re running
     for job_id in job_ids:
         job = api.get_job(job_id=job_id)
+        if not job or job is None:
+            continue
         # if ('com.linkedin.voyager.jobs.SimpleOnsiteApply' in job['applyMethod'] and 'com.linkedin.voyager.jobs.OffsiteApply' not in job['applyMethod']) and ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' not in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):  #only scrape things with offsite apply
             
         if 'com.linkedin.voyager.jobs.OffsiteApply' in job['applyMethod'] or ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):
@@ -63,7 +56,16 @@ async def populate_job_postings():
             await DB.delete_jobId(job_id)
             continue
 
-
+async def get_unused_job_ids():
+    jobs =  await DB.retrieve_jobIds()
+    job_ids = [obj.jobId for obj in jobs]
+    
+    
+    job_posting_id = await DB.retrieve_jobPostingIds()
+    job_posting_ids = [obj.jobId for obj in job_posting_id]
+    
+    return list(set(job_ids) - set(job_posting_ids)) # dont search for postings already in the job posting db when re running
+    
 async def main():
     await initiate_database()
     

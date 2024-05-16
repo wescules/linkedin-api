@@ -8,18 +8,12 @@ jobPosting_collection = JobPosting
 class DB:
     
     async def add_job_id(jobId: JobId) -> JobId:
-        return await jobId.create()
-        # existing_job_id = await jobIds_collection.find_one({"jobId": jobId.jobId})
-        # if existing_job_id is None:
-        #     return await jobId.create()
+        existing_job_id = await jobIds_collection.find_one({"jobId": jobId.jobId})
+        if existing_job_id is None:
+            return await jobId.create()
         
     async def add_job_posting(job_posting: JobPosting) -> JobId:
         return await job_posting.create()
-
-    # async def find_user(email: str):
-    #     user = await user_collection.find_one({"email": email})
-    #     return user
-
 
     async def retrieve_jobIds() -> List[JobIdList]:
         return await jobIds_collection.all().project(JobIdList).to_list()
