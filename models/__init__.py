@@ -55,6 +55,12 @@ class JobPosting(Document):
     remote_work_allowed: Optional[bool] = False
     company_apply_url: Optional[str] = None
     
+    
+    class Settings:
+        name = "jobPostings"
+    
+class CompanyName(Document):
+    company: Optional[str] = None     
             
     class Settings:
         name = "jobPostings"

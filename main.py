@@ -4,6 +4,8 @@ from linkedin_api import Linkedin
 from database.database import DB
 import asyncio
 
+from models import Company
+from scraper.h1bDatabaseScraper import H1BScraper
 from scraper.linkedinScraper import scrape_job
 
 # Authenticate using any Linkedin account credentials
@@ -18,7 +20,7 @@ api = Linkedin(Settings().LINKEDIN_USERNAME, Settings().LINKEDIN_PASSWORD)
 
 async def get_all_job_listings():
     keywords = [
-        "Software Engineer"
+        "Software Engineer",
         "Frontend Engineer",
         "Backend Engineer",
         "Data Engineer",
@@ -40,13 +42,12 @@ async def get_all_job_listings():
         await DB.insert_jobs(jobs)
 
 async def populate_job_postings():
-    job_ids = await get_unused_job_ids()
+    job_ids = await DB().get_unused_job_ids()
     
     for job_id in job_ids:
         job = api.get_job(job_id=job_id)
         if not job or job is None:
             continue
-        # if ('com.linkedin.voyager.jobs.SimpleOnsiteApply' in job['applyMethod'] and 'com.linkedin.voyager.jobs.OffsiteApply' not in job['applyMethod']) and ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' not in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):  #only scrape things with offsite apply
             
         if 'com.linkedin.voyager.jobs.OffsiteApply' in job['applyMethod'] or ("com.linkedin.voyager.jobs.ComplexOnsiteApply" in job['applyMethod'] and 'companyApplyUrl' in job['applyMethod']['com.linkedin.voyager.jobs.ComplexOnsiteApply']):
             job = await scrape_job(job, job_id)
@@ -56,23 +57,29 @@ async def populate_job_postings():
             await DB.delete_jobId(job_id)
             continue
 
-async def get_unused_job_ids():
-    jobs =  await DB.retrieve_jobIds()
-    job_ids = [obj.jobId for obj in jobs]
-    
-    
-    job_posting_id = await DB.retrieve_jobPostingIds()
-    job_posting_ids = [obj.jobId for obj in job_posting_id]
-    
-    return list(set(job_ids) - set(job_posting_ids)) # dont search for postings already in the job posting db when re running
-    
+async def get_company_info():
+    companies = await DB.retrieve_company_names()
+    for company_name in companies:
+        if company_name:
+            company_name = company_name.strip()
+            try:
+                company = api.search_companies(keywords=company_name, limit=1)
+                if len(company) > 0:
+                    company = company[0]
+                    company_descriptor, company_legal_name = await H1BScraper().scrape_job(company_name)
+                    company = Company(companyId=company['urn_id'], company_name=company_name, company_legal_name=company_legal_name, company_descriptor=company_descriptor)
+                    await DB.add_company(company)
+            except:
+                continue
 async def main():
     await initiate_database()
     
     # await get_all_job_listings()
     
     await populate_job_postings()
-        
+
+    # await get_company_info()
+    
     
 asyncio.run(main())
 

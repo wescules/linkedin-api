@@ -298,7 +298,7 @@ class Linkedin(object):
             ) or len(new_elements) == 0:
                 break
 
-            self.logger.debug(f"results grew to {len(results)}")
+            print(f"results grew to {len(results)}")
 
         return results
 
@@ -868,7 +868,7 @@ class Linkedin(object):
             return results
 
         results.extend(data["elements"])
-        self.logger.debug(f"results grew: {len(results)}")
+        print(f"results grew: {len(results)}")
 
         return self.get_company_updates(
             public_id=public_id,
@@ -917,7 +917,7 @@ class Linkedin(object):
             return results
 
         results.extend(data["elements"])
-        self.logger.debug(f"results grew: {len(results)}")
+        print(f"results grew: {len(results)}")
 
         return self.get_profile_updates(
             public_id=public_id,
@@ -1065,7 +1065,7 @@ class Linkedin(object):
         params = {"action": "create"}
 
         if not (conversation_urn_id or recipients):
-            self.logger.debug("Must provide [conversation_urn_id] or [recipients].")
+            print("Must provide [conversation_urn_id] or [recipients].")
             return True
 
         message_event = {
@@ -1429,7 +1429,7 @@ class Linkedin(object):
             ) or len(l_raw_urns) == 0:
                 break
 
-            self.logger.debug(f"results grew to {len(l_urns)}")
+            print(f"results grew to {len(l_urns)}")
 
         return l_posts, l_urns
 
