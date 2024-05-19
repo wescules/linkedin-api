@@ -76,9 +76,9 @@ async def main():
     
     # await get_all_job_listings()
     
-    await populate_job_postings()
+    # await populate_job_postings()
 
-    # await get_company_info()
+    await get_company_info()
     
     
 asyncio.run(main())
